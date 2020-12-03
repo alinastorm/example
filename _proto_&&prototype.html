@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			// Все объекты созданы из прототипов других объектов родителей
+			// Прототип из которого создан объект прописан в скрытом свойстве [[Prototype]]
+			// Доступ к [[Prototype]] через геттер сеттер __proto__
+			// соотвественно __proto__ есть у всех объектов
+			// [[Prototype]]объекта ссылается на prototype Класса(функции) объекта с помощью которого был создан
+			// prototype есть только у Классов(функций)
+			// let obj.__proto__   = new obj.prototype
+			// __proto__ одинаковый у одинаковых по типу объектов
+			// __proto__ у функций и классов одинаковы так как они одинаковые по типу
+			//после создания объекта нельзя менять состав свойств у prototype родителя. Значения можно.
+			//при чтении свойства из объекта если его нет js читает его из [[Prototype]] через геттер __proto__(может и напрямую)
+
+			/**
+			 * prototype – объект с единственным свойством constructor, которое ссылается на функцию-конструктора (саму себя) { constructor: Rabbit }
+			 * Rabbit.prototype = { constructor: Rabbit }
+			 * Rabbit.prototype.constructor == Rabbit )
+			 * rabbit.constructor == Rabbit .Cвойство constructor rabbit берет из [[Prototype]] или __proto__ класса Rabbit
+			 */
+
+			// let p
+			// console.log("p", p.__proto__)// error Uncaught TypeError: Cannot read property '__proto__' of undefined
+
+			let a = { value: 18 };
+
+			console.log("a __proto__:", a.__proto__ == Object.prototype); // true Object.prototype
+			console.log("a constructor:", a.constructor == Object); // true
+			console.log("a prototype:", a.prototype); //undefined
+
+			let b;
+			b = a;
+			console.log("b __proto__:", b.__proto__ == Object.prototype); // true Object.prototype
+			console.log("b constructor:", b.constructor == Object); // true
+			console.log("b prototype:", b.prototype); //undefined
+
+			let r = [];
+			console.log("r __proto__:", r.__proto__ == Array.prototype); //true Array.prototype
+			console.log("r constructor:", r.constructor == Array); // true
+			console.log("r prototype:", r.prototype); //undefined
+
+			let d = 18;
+			console.log("d __proto__:", d.__proto__ == Number.prototype); //true Number.prototype
+			console.log("d constructor:", d.constructor == Number); // true
+			console.log("d prototype:", d.prototype); //undefined
+
+			let e = "asd";
+			console.log("e:", e.__proto__ == String.prototype); //String.prototype
+			console.log("e constructor:", e.constructor == String); // true
+			console.log("e:", e.prototype); //undefined
+
+			function c() {}
+			console.log("c __proto__:", c.__proto__ == Function.prototype); //Function.prototype
+			console.log("c constructor:", c.constructor == Function); // true
+			console.log("c prototype:", c.prototype); //{constructor: ƒ}
+
+			class K {}
+			console.log("K __proto__:", K.__proto__ == Function.prototype); //Function.prototype
+			console.log("K constructor:", K.constructor == Function); // true
+			console.log("K prototype:", K.prototype); //{constructor: ƒ}
+
+			let k = new K();
+			console.log("k __proto__:", k.__proto__ == K.prototype); //true {constructor: ƒ}
+			console.log("k constructor:", k.constructor == K); // true
+			console.log("k prototype:", k.prototype); //undefined
+			// console.log('k:',k.prototype);
+		</script>
+	</body>
+</html>
