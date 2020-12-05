@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+      			Пример1 который илюстриует ссылка разрывается или просто модифицируется
+      			*/
+      // let a = { prop1: "1", prop2: "2", prop3: { prop4: "4" } };
+      // let b = a.prop3;
+      // a.prop3 = "12432534266";
+      // a.prop3.prop4 = "5";
+
+      // console.log(b);
+      // console.log(a.prop3);
+
+      /**
+      			Пример2 который илюстриует что при случае 1 ссылка разрывается а в случает два просто модифицируется
+      			*/
+
+      // function Rabbit() {}
+      // Rabbit.prototype = {
+      //   eats: true,
+      // };
+
+      // let rabbit = new Rabbit();
+
+      // Rabbit.prototype = {};//1
+      // Rabbit.prototype.eats = false;//2
+
+      // alert(rabbit.eats);
+
+      let point = { x: 1, y: 1 };
+      function fn(point, k) {
+        point.x *= k;
+        point.y *= k;
+      }
+      fn(point, 2);
+      console.log(point);
+    </script>
+  </body>
+</html>
