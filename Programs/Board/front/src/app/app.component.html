@@ -1,0 +1,15 @@
+<div class="">
+  <canvas
+    id="myCanvas"
+    #canvas
+    (mouseup)="sendFile()"
+    (touchend)="sendFile()"   
+  ></canvas>
+</div>
+
+  <button id="clear"  (click)="sendClear()">
+    Очистить
+  </button>
+<div>
+  <input id="color" type="color" (input)="changeColor($event.target.value)" />
+</div>

@@ -1,0 +1,31 @@
+<article>
+  <div class="grid-container">
+    <form>
+      <p>
+        <label>UUID</label>
+        <button id="btn-uuid" type="reset" (click)="getUUID()">
+          Generate
+        </button>
+        <input type="text"  id="login" name="UUID" #emituuid />
+      </p>
+      <p>
+        <label>Data</label>
+        <input type="text" name="login" id="login" #emitdata />
+      </p>
+      <button id="btn-emit" type="reset"  (click)="createEvents(emituuid.value,emitdata.value)">emit</button>
+    </form>
+    <form>
+      <p>
+        <label>UUID</label>
+        <input type="text" #subsuuid />
+      </p>
+      <p>
+        <label>Data</label>
+        <input type="text" #subsdata/>
+      </p>
+      <button id="btn-subscribe" type="reset"  (click)="subscribeEvents(emituuid.value)">subscribe</button>
+    </form>
+
+  </div>
+</article>
+<app-socket></app-socket>

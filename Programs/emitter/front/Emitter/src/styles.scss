@@ -1,0 +1,55 @@
+$heightHeader: 80px;
+$heightFooter: 60px;
+$colorHeader: #373737;
+$colorNav: #373737;
+$colorMain: #373737;
+$colorAside: #373737;
+$colorFooter: #373737;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font: 14px/20px 'Roboto', Helvetica, Arial, sans-serif;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+header {
+  height: $heightHeader;
+  grid-column: span 12;
+  background-color: $colorHeader;
+}
+nav {
+  grid-column: 1 / span 1;
+  background-color: $colorNav;
+}
+main {
+  min-height: calc(100vh - #{$heightHeader} - #{$heightFooter});
+  grid-column: 2 / span 10;
+  background-color: $colorMain;
+}
+aside {
+  grid-column: 12 / span 1;
+  background-color: $colorAside;
+}
+footer {
+  height: $heightFooter;
+  grid-column: span 12;
+  background-color: $colorFooter;
+}
+
+@media screen and (max-width: 768px) {
+  main {
+    grid-column: span 11;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  main {
+    grid-column: span 12;
+  }
+}

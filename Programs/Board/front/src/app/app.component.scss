@@ -1,0 +1,28 @@
+canvas{
+    // background-image: url('/setka.png');
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: #F1F3F4; 
+    display: block;
+    
+}
+canvas:hover{
+    cursor: pointer;
+}
+#clear{
+    position: absolute;
+    bottom: 4px;
+    right: 0;
+    height: 40px;
+    width: 100px;
+
+}
+#color{
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    height: 40px;
+    width: 100px;
+
+}

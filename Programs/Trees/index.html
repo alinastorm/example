@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <link href="style.css" rel="stylesheet" />
+
+  <body>
+    <div>
+      <canvas id="c1" style="position: absolute; left: 0; top: 0">браузер не поддерживает canvas</canvas>
+      <canvas id="c2" style="position: absolute; left: 0; top: 0">браузер не поддерживает canvas</canvas>
+       -->
+     
+    </div>
+
+
+   <script>
+      var finalMass = [];
+      var canvas = document.getElementById("c1");
+      var canvas2 = document.getElementById("c2");
+      var ctx = canvas.getContext("2d");
+      var ctx2 = canvas2.getContext("2d");
+      var width = "1200",
+        height = "800";
+      var selected = false;
+      canvas.width = width;
+      canvas.height = height;
+      canvas2.width = width;
+      canvas2.height = height;
+      canvas.style.backgroundColor = "#EFF0F1";
+
+      // { node: "P1",nx: 0,ny: 0,nxrl: 0,ps:[{parent: "P2", px: 600, py: 200, nxrl: 0} },
+      var nodes = [
+        { node: "P1", parent: "0" },
+        { node: "P2", parent: "P1" },
+        { node: "P3", parent: "P2" },
+        { node: "N1", parent: "P1" },
+        { node: "N2", parent: "P2" },
+        { node: "N3", parent: "N1" },
+        { node: "N3", parent: "P2" },
+        { node: "N4", parent: "P3" },
+        { node: "N4", parent: "N3" },
+        { node: "N5", parent: "P2" },
+        { node: "N5", parent: "N3" },
+        { node: "P1", parent: "0" },
+        { node: "P2", parent: "P1" },
+        { node: "P3", parent: "P2" },
+        { node: "N1", parent: "P1" },
+        { node: "N2", parent: "P2" },
+        { node: "N3", parent: "N1" },
+        { node: "N3", parent: "P2" },
+        { node: "N4", parent: "P3" },
+        { node: "N5", parent: "P2" },
+        { node: "N5", parent: "N3" },
+        { node: "P1", parent: "0" },
+        { node: "P2", parent: "P1" },
+        { node: "P3", parent: "P2" },
+        { node: "N1", parent: "P1" },
+        { node: "N2", parent: "P2" },
+        { node: "N3", parent: "N1" },
+        { node: "N3", parent: "P2" },
+        { node: "N4", parent: "P3" },
+        { node: "N5", parent: "P2" },
+        { node: "N5", parent: "N3" },
+        { node: "e1", parent: "N4" },
+        { node: "k1", parent: "P1" },
+        { node: "k1", parent: "N5" },
+        { node: "e1", parent: "P3" }
+      ];
+      console.dir(nodes);
+
+      bat1();
+
+      async function bat1() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        grouping_object_property(
+          nodes,
+          "node",
+          "parent",
+          "ps",
+          "finish",
+          "start",
+          1
+        );
+        await level_0(nodes, 1); //приходит Сложен
+        await determinationLevel(nodes, 1); //Приходит сложен definition
+        // await compound(nodes); //приходит разложен
+        await raschet_detei_u_nods(nodes, 1);
+        nodes.sort(sortirovka_po_childs);
+        await determinationPosition(nodes); //приходит сложен
+        await paintnodes(nodes); //приходит сложен
+        await paintLines(nodes);
+      }
+
+      //---------------------------Группировка нод по nodid  с одинковым родителем
+      function grouping_object_property(
+        massive, //Объект
+        search_prop, //Поисковое свойство  для группировки по одинаковому значению 2-х элементов
+        group_prop, //Группируемое свойство
+        name_massprops, //Название массива группируемых свойств
+        search1_from, //Вариант обхода 1-элемента если fininsh то с конца иначе сначала. Второй всегда сверху
+        search2_from, //Вариант обхода 2-элемента если fininsh то с конца иначе сначала. Второй всегда сверху
+        test //консоль дир
+      ) {
+        //Переносим свойство в массив
+        massive.forEach(element => {
+          if (!element.hasOwnProperty(name_massprops)) {
+            element[name_massprops] = [];
+
+            element[name_massprops].push(element[group_prop]);
+
+            delete element[group_prop];
+          }
+        });
+
+        //Выбираем 1 элемент
+        for (
+          let index1 = search1_from == "finish" ? massive.length - 1 : 0;
+          search1_from == "finish" ? index1 >= 0 : index1 < massive.length;
+          search1_from == "finish" ? index1-- : index1++
+        ) {
+          if (massive[index1] == "deleted") {
+            continue;
+          }
+          let element_1 = massive[index1];
+          //Выбираем 2 элемент
+          for (
+            let index2 = search2_from == "finish" ? massive.length - 1 : 0;
+            search2_from == "finish" ? index2 >= 0 : index2 < massive.length;
+            search2_from == "finish" ? index2-- : index2++
+          ) {
+            if (massive[index2] == "deleted") {
+              continue;
+            }
+            let element_2 = massive[index2];
+            //Если одиноаковый search_prop и исключая самого себя
+            if (
+              element_1[search_prop] == element_2[search_prop] &&
+              index1 !== index2
+            ) {
+              //Проверяем есть ли в массиве уже такой перент
+              let test = element_1[name_massprops].indexOf(element_2.ps[0]);
+              if (test == -1) {
+                element_1[name_massprops].push(element_2.ps[0]);
+              }
+              massive.splice(index2, 1);
+
+              search1_from == "start" ? (index1 = index1) : index1--;
+              search2_from == "start" ? index2-- : (index2 = index2);
+            }
+          }
+        }
+
+        if (test == 1) {
+          console.dir(massive);
+        }
+        return massive;
+      }
+
+      //Добавляем левел 0 если нет
+      function level_0(
+        massive, //Объект
+
+        test //консоль дир
+      ) {
+        massive.forEach(element => {
+          if (!element.hasOwnProperty("level")) {
+            element["level"] = "0";
+          }
+        });
+        if (test == 1) {
+          console.dir(massive);
+        }
+        return (nodes = massive);
+      }
+      //Расчет уровня нод по наличию родителей TODO переписать object на nodes
+      function determinationLevel(
+        massive, //Объект
+        test //консоль дир
+      ) {
+        var tempMass = [];
+        Leveling(massive);
+        //-------Добавление уровней
+        function Leveling(massive) {
+          tempMass = [];
+
+          massive.forEach(element_1 => {
+            let tempNode = {};
+
+            let tempMassPerents = element_1.ps;
+
+            tempMassPerents.forEach(element_2 => {
+              let yesno = true;
+
+              let tempNode = {};
+
+              massive.forEach(element_3 => {
+                if (element_2 == element_3.node && yesno) {
+                  tempNode["level"] = Number(element_1.level) + 1;
+                  tempNode["node"] = element_1.node;
+                  tempNode["ps"] = [];
+                  tempNode.ps.push(element_2);
+
+                  tempMass.push(tempNode);
+                  yesno = false;
+                }
+              });
+              if (yesno) {
+                tempNode["level"] = Number(element_1.level) + 1;
+                tempNode["node"] = element_1.node;
+                tempNode["parent"] = element_2;
+
+                finalMass.push(tempNode);
+              }
+            });
+          });
+        }
+        while (tempMass.length > 0) {
+          Leveling(tempMass);
+        }
+        massive = grouping_object_property(
+          finalMass,
+          "node",
+          "parent",
+          "ps",
+          "finish",
+          "start",
+          0
+        );
+        if (test == 1) {
+          console.dir(massive);
+        }
+        return (nodes = massive);
+      }
+      function raschet_detei_u_nods(massive, test) {
+        massive.forEach(element_1 => {
+          element_1.childs = 0;
+          massive.forEach(element_2 => {
+            element_2.ps.forEach(element => {
+              if (element_1.node == element) {
+                element_1.childs += 1;
+              }
+            });
+          });
+        });
+        if (test == 1) {
+          console.dir(massive);
+        }
+        return (nodes = massive);
+      }
+
+      function sortirovka_po_childs(a, b) {
+        if (a.level == b.level) {
+          if (a.childs > b.childs) return -1;
+          if (a.childs < b.childs) return 1;
+        }
+      }
+      //Расчет координат нод TODO TODO переписать massive на nodes
+      function determinationPosition(finalMass) {
+        const centr = 600; //позиция середины графика
+        step = 80;
+
+        x1 = centr;
+        x2 = centr;
+        n = 1;
+        var l;
+        for (let index = 0; index < finalMass.length; index++) {
+          level = finalMass[index].level;
+
+          //Если уровень перебора равен предыдущей то СДВИГАЕМ НОДЫ НА ОДНОМ УРОВНЕ
+          if (l == level) {
+            if (finalMass[index].childs > 0) {
+              x1 = x1 + step; //centr + (n * Math.abs(x - centr) + step * n); // сдвиг на предыдущую разницу + шаг
+
+              finalMass[index].nx = x1;
+              finalMass[index].ny = level * step + step / 2;
+              finalMass[index].nxrl = n;
+
+              n = n * -1; //разброс влево вправо при следующем шаге
+            } else {
+              // //   x = centr + n * Math.abs(x - centr);
+
+              x2 = x2 - step; //centr + (n * Math.abs(x - centr) + step * n); // сдвиг на предыдущую разницу + шаг
+
+              finalMass[index].nx = x2;
+              finalMass[index].ny = level * step + step / 2;
+              finalMass[index].nxrl = n;
+
+              // finalMass[index].nx = centr - Math.abs(centr - x);
+              // finalMass[index].ny = level * step + step / 2;
+              // finalMass[index].nxrl = n ;
+              // // n = n * -1;
+            }
+          } else {
+            finalMass[index].nx = centr;
+            finalMass[index].ny = level * step + step / 2;
+            finalMass[index].nxrl = 0;
+            x1 = centr;
+            x2 = centr;
+            n = 1;
+          }
+
+          l = level;
+        }
+        // finalMass.forEach(element => {
+        //   element.ps = [];
+        // });
+        //-----------------------------------------Установим координаты родителя из ноды TODO сделать отдельную функцию
+        for (let index1 = 0; index1 < finalMass.length; index1++) {
+          const element_1_1 = finalMass[index1];
+
+          var prohod = true;
+
+          let tempMassPerents = element_1_1.ps;
+          // let tempMassPerents = element_1_1.parent.split(",");
+          tempMassPerents.forEach(element => {
+            for (let index2 = 0; index2 < finalMass.length; index2++) {
+              const element_2_2 = finalMass[index2];
+
+              if (element == element_2_2.node) {
+                // let tempmass = [];
+
+                let tempobj = {};
+                tempobj.parent = element;
+                tempobj.px = element_2_2.nx;
+                tempobj.py = element_2_2.ny;
+                tempobj.nxrl = element_2_2.nxrl;
+                // tempmass.push(tempobj);
+
+                finalMass[index1].ps.push(tempobj);
+              }
+            }
+          });
+        }
+        // console.log("determinationPosition");
+        console.dir(finalMass);
+        return (nodes = finalMass);
+      }
+
+      //  function stroke (element){
+
+      // };
+      //Рисуем ноды-----// Рисуем прямоугольник \ .fillRect(x,y,whidth,hight)
+      function paintnodes(mass) {
+        mass.forEach(element => {
+          ctx.fillStyle = "#a5c0f1";
+          ctx.fillRect(element.nx, element.ny, step / 2, step / 2);
+          ctx.fillStyle = "black";
+          ctx.font = "18px Courier";
+
+          // ctx.font = "48px serif";
+          ctx.fillText(element.node, element.nx, element.ny + step / 4);
+          // ctx.strokeText(element.node, element.nx, element.ny + step / 4);
+        });
+        console.dir(nodes);
+      }
+
+      function paintLines(mass) {
+        mass.forEach(element_1_1 => {
+          if (element_1_1.hasOwnProperty("ps")) {
+            //рисуем если есть родитель
+            // var prohod = true;
+            let p = element_1_1.ps;
+            p.forEach(element_2_2 => {
+              pos1 = element_1_1.nxrl;
+
+              ctx.moveTo(element_1_1.nx + step / 4, element_1_1.ny);
+              ctx.lineTo(element_2_2.px + step / 4, element_2_2.py + step / 2);
+
+              //   n1x = element_1_1.nx + step / 4;
+              //   n1y = element_1_1.ny;
+              //   p2x = element_2_2.px + step / 4;
+              //   p2y = element_2_2.py + step / 2;
+
+              //   pos = element_1_1.nxrl;
+              //   let n4x;
+              //   let n4y;
+
+              //   if ((pos = 1)) {
+              //     n4x = p2x - Math.abs(p2x - n1x) / 4;
+              //     n4y = n1y + Math.abs(p2y - n1y) / 4;
+              //   }
+              //   if ((pos = -1)) {
+              //     n4x = n1x - Math.abs(n1x - p2x) / 4;
+              //     n4y = p2y - Math.abs(p2y - n1y) / 4;
+              //   }
+
+              //   //   ctx.lineTo(element_2_2.px + step / 4, element_2_2.py + step / 2);
+              //   // ctx.bezierCurveTo()
+              //   ctx.quadraticCurveTo(
+              //     n4x,
+              //     n4y,
+              //     element_2_2.px + step / 4,
+              //     element_2_2.py + step / 2
+              //   );
+
+              ctx.stroke();
+              // prohod = false;
+            });
+          }
+        });
+      }
+      var mouse = {
+        x: 0,
+        y: 0
+      };
+      function cursorInRect(element) {
+        for (let index = 0; index < nodes.length; index++) {
+          const element = nodes[index];
+          var element2;
+          if (
+            mouse.x > element.nx &&
+            mouse.x < element.nx + step / 2 &&
+            mouse.y > element.ny &&
+            mouse.y < element.ny + step / 2
+          ) {
+            element2 = element;
+            break;
+          }
+        }
+        return element2 ;
+      }
+      var element2 = {nx:0,ny:0};
+      window.onmousedown = function(e) {
+        var rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+        if ((element = cursorInRect(mouse))) {
+          // ctx2.clearRect(element2.nx, element2.ny, step / 2, step / 2);
+          ctx2.strokeRect(element.nx, element.ny, step / 2, step / 2);
+          element2 = element;
+        } else {
+          // ctx2.clearRect(element2.nx, element2.ny, step / 2, step / 2);
+          ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+          // nodes = [];
+          // bat1()
+        }
+      };
+      // window.onmouseup = function() {
+      //   nodes = [];
+      // };
+    </script>
+  </body>
+</html>

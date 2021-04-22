@@ -1,0 +1,26 @@
+{
+  "name": "ceaser",
+  "version": "1.0.0",
+  "description": "de\\encryption",
+  "main": "main.js",
+  "scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node main.js -a encode -s 7",
+		"postinstall": "npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alinastorm/ceaser.git"
+    
+  },
+  "author": "i",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alinastorm/ceaser/issues"
+  },
+  "homepage": "https://github.com/alinastorm/ceaser#readme",
+  "devDependencies": {},
+  "dependencies": {
+    "commander": "^6.1.0"
+  }
+}
