@@ -10,13 +10,14 @@ wsServer.on("connection", function connection(websocket, request) {
 		// 	request.headers.origin,
 		// 	request.socket.remoteAddress
 		// );
-        // console.log(data);
-        // const msg = { event: "messages", data: data }
-        wsServer.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(data);
-            }
-          });
+		// console.log(data);
+		// const msg = { event: "messages", data: data }
+		wsServer.clients.forEach(function each(client) {
+			//TODO if(connection != client){} что бы не отправлять самому себе 
+			if (client.readyState === WebSocket.OPEN) {
+				client.send(data);
+			}
+		});
 		// websocket.send(data);
 	});
 	// websocket.on("message", (data) => {
